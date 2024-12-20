@@ -20,7 +20,7 @@ jobs:
 
       - name: Run and test the Docker image
         run: |
-          docker run -d -p 3000:8000 jljl1337/testpod:test
-          curl http://localhost:3000/
-          curl http://localhost:3000/api
+          docker run -d jljl1337/testpod:test
+          docker exec $(docker ps -q) curl -s localhost:8000
+          docker exec $(docker ps -q) curl -s localhost:8000/api
           docker stop $(docker ps -q)
