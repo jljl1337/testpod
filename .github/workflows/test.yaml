@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - opened
 
 jobs:
   test:
@@ -21,7 +19,7 @@ jobs:
       - name: Run and test the Docker image
         run: |
           docker run -d -p 3000:8000 jljl1337/testpod:test
-          sleep 5
+          sleep 3
           curl http://localhost:3000/
           curl http://localhost:3000/api
           docker stop $(docker ps -q)
