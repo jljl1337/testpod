@@ -1,0 +1,26 @@
+name: Testing
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+
+jobs:
+  test:
+    name: Test the Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build -t jljl1337/testpod:test .
+
+      - name: Run and test the Docker image
+        run: |
+          docker run -d -p 3000:8000 jljl1337/testpod:test
+          curl http://localhost:3000/
+          curl http://localhost:3000/api
+          docker stop $(docker ps -q)
