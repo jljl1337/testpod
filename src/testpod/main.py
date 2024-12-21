@@ -25,9 +25,12 @@ def root():
 def api():
     return append_api_content(f'<p>Calling {HOSTNAME}</p>')
 
-if __name__ == '__main__':
+def main():
     host = os.environ.get('HOST', '0.0.0.0')
     port = os.environ.get('PORT', 8000)
 
     print(f'Starting server on {host}:{port}')
     serve(app, host=host, port=port)
+
+if __name__ == '__main__':
+    main()

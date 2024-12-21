@@ -1,6 +1,8 @@
+# Base image
 FROM python:3.13-slim AS base
 
-FROM base AS dependencies
+# Builder image
+FROM base AS builder
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -14,14 +16,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-editable --compile-bytecode
 
+# Install the application
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-editable --compile-bytecode
+
+# Runner image
 FROM base AS runner
-WORKDIR /app
 
-# Copy the environment
-COPY --from=dependencies --chown=app:app /app/.venv /app/.venv
-
-# Copy the application
-COPY ./main.py /app
+# Copy the environment, but not the source code
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
 
 # Run the application
-CMD [".venv/bin/python", "main.py"]
+CMD ["/app/.venv/bin/main"]
