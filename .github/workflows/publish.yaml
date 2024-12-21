@@ -27,7 +27,7 @@ jobs:
 
       - name: Extract version for tagging
         id: version
-        run: echo "version=$(grep -m 1 version pyproject.toml | grep -E '\d.\d.\d' -o)" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep -m 1 version pyproject.toml)" >> $GITHUB_OUTPUT
 
       - name: Test extract version
         id: test_extract_version
