@@ -18,7 +18,7 @@ def append_api_content(html: str) -> str:
     return html
 
 @app.route('/')
-def home():
+def root():
     return append_api_content(f'<h1>Hello, World from {HOSTNAME}!</h1>')
 
 @app.route('/api')
