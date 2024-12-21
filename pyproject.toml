@@ -1,7 +1,7 @@
 [project]
-name = "app"
-version = "0.1.0"
-description = "Add your description here"
+name = "testpod"
+version = "0.1.1"
+description = "Simple containerized Flask app for orchestrator testing"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
