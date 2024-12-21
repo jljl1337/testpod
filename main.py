@@ -10,25 +10,20 @@ app = Flask(__name__)
 HOSTNAME = socket.gethostname()
 API_URL = os.environ.get('API_URL')
 
-@app.route('/')
-def home():
-    html = f'<h1>Hello, World from {HOSTNAME}!</h1>'
-
+def append_api_content(html: str) -> str:
     if API_URL:
         api_content = requests.get(API_URL).content.decode('utf-8')
         html = f'{html}{api_content}'
 
     return html
+
+@app.route('/')
+def home():
+    return append_api_content(f'<h1>Hello, World from {HOSTNAME}!</h1>')
 
 @app.route('/api')
 def api():
-    html = f'<p>Calling {HOSTNAME}</p>'
-
-    if API_URL:
-        api_content = requests.get(API_URL).content.decode('utf-8')
-        html = f'{html}{api_content}'
-
-    return html
+    return append_api_content(f'<p>Calling {HOSTNAME}</p>')
 
 if __name__ == '__main__':
     host = os.environ.get('HOST', '0.0.0.0')
