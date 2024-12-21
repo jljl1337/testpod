@@ -1,9 +1,11 @@
-name: Publish (Testing)
+name: Publish
 
 on:
   push:
     branches:
-      - 14-build-add-github-action-for-pushing-to-docker-hub
+      - main
+    path:
+      - pyproject.toml
 
 jobs:
   push_to_registry:
@@ -29,6 +31,18 @@ jobs:
         id: version
         run: echo "version=$(grep -m 1 version pyproject.toml | grep -P '\d.\d.\d' -o)" >> $GITHUB_OUTPUT
 
-      - name: Test extract version
-        id: test_extract_version
-        run: echo "${{ steps.version.outputs.version }}"
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: jljl1337/testpod:latest,jljl1337/testpod:${{ steps.version.outputs.version }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
