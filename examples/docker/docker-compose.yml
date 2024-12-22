@@ -1,0 +1,15 @@
+services:
+  frontend:
+    image: jljl1337/testpod
+    ports:
+      - "8000:8000"
+    environment:
+      - API_URL=http://backend:8000/api
+
+  backend:
+    image: jljl1337/testpod
+    environment:
+      - API_URL=http://database:8000/api
+
+  database:
+    image: jljl1337/testpod
