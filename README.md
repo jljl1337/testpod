@@ -2,7 +2,9 @@
 
 [![Testing](https://github.com/jljl1337/testpod/actions/workflows/test.yaml/badge.svg)](https://github.com/jljl1337/testpod/actions/workflows/test.yaml)
 [![Publish](https://github.com/jljl1337/testpod/actions/workflows/publish.yaml/badge.svg)](https://github.com/jljl1337/testpod/actions/workflows/publish.yaml)
-[![Source](https://img.shields.io/badge/source-GitHub-blue?logo=github)](https://github.com/jljl1337/testpod)
+[![Source](https://img.shields.io/badge/Source-GitHub-blue?logo=github)](https://github.com/jljl1337/testpod)
+[![Docker](https://img.shields.io/badge/Docker-jljl1337%2Ftestpod-blue?logo=docker)](https://hub.docker.com/r/jljl1337/testpod)
+[![License](https://img.shields.io/github/license/jljl1337/testpod)](https://github.com/jljl1337/testpod/blob/main/LICENSE)
 
 A simple web application for container orchestrator testing
 
@@ -12,8 +14,6 @@ application that displays the hostname of the pod/container that is serving the
 request.
 
 ## Usage
-
-The image is available on [Docker Hub](https://hub.docker.com/r/jljl1337/testpod).
 
 The image serves a simple web application on port 8000 by default, which returns
 the hostname of the pod/container in a `h1` tag. Besides the root path, the
@@ -42,6 +42,8 @@ services:
   database:
     image: jljl1337/testpod
 ```
+
+More examples can be found in the `examples` directory [here](https://github.com/jljl1337/testpod/tree/main/examples).
 
 The environment variables can be set are:
 
