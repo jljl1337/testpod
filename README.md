@@ -43,7 +43,8 @@ services:
     image: jljl1337/testpod
 ```
 
-More examples can be found in the `examples` directory [here](https://github.com/jljl1337/testpod/tree/main/examples).
+Examples of Docker Swarm, Kubernetes can be found in the `examples` directory
+[here](https://github.com/jljl1337/testpod/tree/main/examples).
 
 The environment variables can be set are:
 
