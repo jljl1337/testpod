@@ -22,10 +22,13 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-editable --compile-bytecode
 
 # Runner image
-FROM base AS runner
+FROM gcr.io/distroless/python3-debian12 AS runner
 
-# Copy the environment, but not the source code
+# Copy the virtual environment
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
+
+# Add the path to the virtual environment to the PYTHONPATH
+ENV PYTHONPATH=/app/.venv/lib/python3.13/site-packages:$PYTHONPATH
 
 # Run the application
 CMD ["/app/.venv/bin/main"]
