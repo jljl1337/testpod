@@ -1,34 +1,43 @@
-# Base image
-FROM python:3.13-slim AS base
+# An example of using standalone Python builds with multistage images.
 
-# Builder image
-FROM base AS builder
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-# Change the working directory to the `app` directory
+# First, build the application in the `/app` directory
+FROM ghcr.io/astral-sh/uv:bookworm-slim AS builder
 WORKDIR /app
 
-# Install dependencies
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+# Configure the Python directory so it is consistent
+ENV UV_PYTHON_INSTALL_DIR=/python
+
+# Only use the managed Python version
+ENV UV_PYTHON_PREFERENCE=only-managed
+
+# Install Python before the project for caching
+ADD .python-version /app/.python-version
+RUN uv python install "$(cat .python-version)"
+
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-editable --compile-bytecode
-
-# Install the application
+    uv sync --frozen --no-install-project --no-dev
 ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-editable --compile-bytecode
+    uv sync --frozen --no-dev
 
-# Runner image
-FROM gcr.io/distroless/python3-debian12 AS runner
+# Then, use a final image without uv
+FROM debian:bookworm-slim
 
-# Copy the virtual environment
-COPY --from=builder --chown=app:app /app/.venv /app/.venv
+# Copy the Python version
+COPY --from=builder --chown=python:python /python /python
 
-# Add the path to the virtual environment to the PYTHONPATH
-ENV PYTHONPATH=/app/.venv/lib/python3.13/site-packages:$PYTHONPATH
+# Copy the application from the builder
+COPY --from=builder --chown=app:app /app /app
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# For logs in docker
+ENV PYTHONUNBUFFERED=1
 
 # Run the application
 CMD ["/app/.venv/bin/main"]
