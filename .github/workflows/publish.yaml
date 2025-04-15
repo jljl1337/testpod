@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - pyproject.toml
+      - .github/workflows/publish.yaml
 
 jobs:
   push_to_registry:
