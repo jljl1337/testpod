@@ -37,5 +37,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: jljl1337/testpod:latest,jljl1337/testpod:${{ steps.version.outputs.version }}
