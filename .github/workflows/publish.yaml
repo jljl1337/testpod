@@ -47,3 +47,32 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: jljl1337/testpod:latest,jljl1337/testpod:${{ steps.version.outputs.version }}
+
+  create_release:
+    name: Create a release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Get project version
+        uses: SebRollen/toml-action@v1.2.0
+        id: project-version
+        with:
+          file: 'pyproject.toml'
+          field: 'project.version'
+      
+      - name: Remove release if it exists
+        run: gh release delete v${{ steps.project-version.outputs.value }} --cleanup-tag -y
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.project-version.outputs.value }}
+          generate_release_notes: true
