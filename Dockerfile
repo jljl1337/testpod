@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 # Then, use a final image without uv
-FROM debian:bookworm-slim AS runtime
+FROM gcr.io/distroless/base-debian12 AS runtime
 
 # Copy the Python version
 COPY --from=builder --chown=python:python /python /python
