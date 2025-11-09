@@ -1,43 +1,23 @@
-# An example of using standalone Python builds with multistage images.
+# Multi-stage build for Go application
 
-# First, build the application in the `/app` directory
-FROM ghcr.io/astral-sh/uv:bookworm-slim AS builder
+# Build stage
+FROM golang:1.23.3-alpine AS builder
 WORKDIR /app
 
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+# Copy go mod files
+COPY go.mod ./
 
-# Configure the Python directory so it is consistent
-ENV UV_PYTHON_INSTALL_DIR=/python
+# Copy source code
+COPY main.go ./
 
-# Only use the managed Python version
-ENV UV_PYTHON_PREFERENCE=only-managed
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o testpod .
 
-# Install Python before the project for caching
-ADD .python-version /app/.python-version
-RUN uv python install "$(cat .python-version)"
+# Runtime stage
+FROM scratch AS runtime
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
-
-# Then, use a final image without uv
-FROM gcr.io/distroless/base-debian12 AS runtime
-
-# Copy the Python version
-COPY --from=builder --chown=python:python /python /python
-
-# Copy the application from the builder
-COPY --from=builder --chown=app:app /app /app
-
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
-
-# For logs in docker
-ENV PYTHONUNBUFFERED=1
+# Copy the binary from builder
+COPY --from=builder /app/testpod /testpod
 
 # Run the application
-CMD ["/app/.venv/bin/main"]
+CMD ["/testpod"]
