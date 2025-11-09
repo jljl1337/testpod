@@ -54,10 +54,7 @@ The environment variables can be set are:
 
 ## Development
 
-Files for dev container are included, but you can also run the application
-locally.
-
-If you are developing locally, make sure you have Go installed.
+Make sure you have latest Go installed, install from [here](https://go.dev/doc/install).
 
 Run the following command to start the application:
 
